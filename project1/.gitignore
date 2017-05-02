@@ -1,0 +1,5 @@
+#.gitignore
+# Augustus Boling, 2017
+
+#Exclude Lemur files
+./lemur/*
