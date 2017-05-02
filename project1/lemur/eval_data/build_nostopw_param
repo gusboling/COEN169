@@ -9,8 +9,9 @@
    <stemmer>porter</stemmer>
    /OLD CODE --->
 
-   <!--- NEW CODE --->
+   <!--- NEW CODE
    <stemmer>krovetz</stemmer>
+	/NEW CODE (INACTIVE) --->
 
    <stopwords>stopwordlist</stopwords>
 </parameters>

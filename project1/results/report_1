@@ -1,0 +1,24 @@
+Project 1:
+
+Question 1.1:
+
+Compared to the first query ("Q1"), which used raw text data, the second 
+query ("Q2") improved performance by using stemming and removing stopwords.
+This is seen in the three metrics shown by the result files - namely the 
+number of relevant documents retrieved and the average precision of each query. 
+Q2 retrieved an additional 88 documents, while also increasing average precision 
+by 161% relative to Q1. R-Precision for Q2 also increased by 97%. According
+to the files included in the eval_data directory, Q2 used the "Porter" stemmer. 
+
+By changing the stemmer parameter a third query was conducted, still
+using stemming and removing stopwords, but now using the "Krovetz" stemmer ("Q3"). The results were found to be identical to Q2.
+
+Question 1.2:
+
+A fourth query was run using only the removal of stopwords ("Q4"). While this query still produced better results than a raw text query (e.g. Q1), it still
+performed worse on all metrics than when stemming was used.
+
+Question 2.1:
+
+After implementing each new weight scheme, three queries were run to illustrate the differences between them. While Okapi query managed to retrieve the greatest number of relevant
+documents, it only found one more than LogTFIDF query. Moreover, the LogTFIDF query had better R-Precision than Okapi's query. RawTFIDF was the clear loser in this competition, with overall scores lower than both LogTFIDF and Okapi.This would suggest that while Okapi can find more relevantresults, it suffers when it comes to retrieving irrelevant documents. Conversely, since LogTFIDF had a higher R-precision, it is better when it come to returning only relevant information.
