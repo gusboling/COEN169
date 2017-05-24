@@ -1,5 +1,0 @@
-#!/bin/sh
-
-gmake lib
-cd app/obj; gmake -s -f ../src/Makefile $1
-
