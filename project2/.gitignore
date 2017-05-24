@@ -1,0 +1,7 @@
+#.gitignore
+
+#Exclude compiled python files
+*.pyc
+
+#Exclude program output
+*.out
