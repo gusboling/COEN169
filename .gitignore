@@ -1,0 +1,5 @@
+#.gitignore
+
+#Exclude lecture files + Assignment PDFs
+*.ppt
+*.pdf
