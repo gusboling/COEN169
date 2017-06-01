@@ -55,6 +55,7 @@ def main():
     predict_5 = []
     predict_10 = []
     predict_20 = []
+
     '''
     #PHASE 2: Make predictions for each user using cosine-similarity and output results
     tpc = 0
@@ -84,6 +85,7 @@ def main():
     datawrite.writePredictions(predict_20, "cosine_result20.txt")
     print("[INFO] Wrote results to file.")
     '''
+
     #PHASE 3: Make predictions for each user using pearson-similarity and output results
     pearson_5 = []
     pearson_10 = []
@@ -93,7 +95,7 @@ def main():
     for tester in testers_5:
         if (tpc % 25) == 0:
             print("[INFO] Processed {}/{} in testers_5 (Pearson)".format(tpc, len(testers_5)))
-        pearson_5.append(predict.getPearsonPrediction(tester, trainers))
+        pearson_5.append(predict.getPearsonPredictionIUF(tester, trainers))
         tpc += 1
     datawrite.writePredictions(pearson_5, "pearson_result5.txt")
     print("[INFO] Wrote results to file.")
@@ -102,7 +104,7 @@ def main():
     for tester in testers_10:
         if (tpc % 25) == 0:
             print("[INFO] Processed {}/{} in testers_10 (Pearson)".format(tpc, len(testers_10)))
-        pearson_10.append(predict.getPearsonPrediction(tester, trainers))
+        pearson_10.append(predict.getPearsonPredictionIUF(tester, trainers))
         tpc += 1
     datawrite.writePredictions(pearson_10, "pearson_result10.txt")
     print("[INFO] Wrote results to file.")
@@ -111,7 +113,7 @@ def main():
     for tester in testers_20:
         if (tpc % 25) == 0:
             print("[INFO] Processed {}/{} in testers_20 (Pearson)".format(tpc, len(testers_20)))
-        pearson_20.append(predict.getPearsonPrediction(tester, trainers))
+        pearson_20.append(predict.getPearsonPredictionIUF(tester, trainers))
         tpc += 1
     datawrite.writePredictions(pearson_20, "pearson_result20.txt")
     print("[INFO] Wrote results to file.")
