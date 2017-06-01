@@ -59,24 +59,22 @@ def main():
     #PHASE 2: Make predictions for each user using cosine-similarity and output results
     tpc = 0
     for tester in testers_5:
-        print("[DEBUG] len(testers_5)")
         if (tpc % 10) == 0:
             print("[INFO] Processed {}/{} in testers_5".format(tpc, len(testers_5)))
         predict_5.append(predict.getCosinePrediction(tester, trainers))
         tpc += 1
 
-    print("[DEBUG] len(testers_5):{}, len(predict_5):{}".format(len(testers_5), len(predict_5)))
-    datawrite.writePredictions(predict_5, "predict_5.txt")
+    datawrite.writePredictions(predict_5, "result5.txt")
     print("[INFO] Wrote results to file.")
 
-    '''
+
     tpc = 0
     for tester in testers_10:
         if (tpc % 10) == 0:
             print("[INFO] Processed {}/{} in testers_10".format(tpc, len(testers_10)))
         predict_10.append(predict.getCosinePrediction(tester, trainers))
         tpc += 1
-    datawrite.writePredictions(predict_10, "predict_10.txt")
+    datawrite.writePredictions(predict_10, "result10.txt")
     print("[INFO] Wrote results to file.")
 
     tpc = 0
@@ -85,10 +83,8 @@ def main():
             print("[INFO] Processed {}/{} in testers_20".format(tpc, len(testers_20)))
         predict_20.append(predict.getCosinePrediction(tester, trainers))
         tpc += 1
-    datawrite.writePredictions(predict_20, "predict_20.txt")
+    datawrite.writePredictions(predict_20, "result20.txt")
     print("[INFO] Wrote results to file.")
-    '''
-
 
     #PHASE 3: Make predictions for each user using pearson-similarity and output results
 

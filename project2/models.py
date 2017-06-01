@@ -42,6 +42,29 @@ class TrainUser:
 
         return math.sqrt(total)
 
+    #Return the pythagorean length of the user's rating-vector
+    def pearson_length(self):
+
+        total = 0
+
+        for key in self.ratings:
+            total = total + (int(self.ratings[key]) - self.average_rating())**2
+
+        return math.sqrt(total)
+
+    #Of the movies the user has seen, return the average rating
+    def average_rating(self):
+
+        count = 0
+        total = 0
+
+        for key in self.ratings:
+            if int(self.ratings[key]) != 0:
+                count += 1
+                total += int(self.ratings[key])
+
+        return (total/count)
+
 #CLASS: TestUser
 #DESCRIPTION: a class to represent testing-users
 class TestUser:
@@ -69,8 +92,8 @@ class TestUser:
     def get_non_zero(self):
         nz = {}
         for key in self.ratings:
-            if self.ratings[key] != 0:
-                nz[key]=self.ratings[key]
+            if int(self.ratings[key]) != 0:
+                nz[key]=int(self.ratings[key])
         return nz
 
     #Return the pythagorean length of the user's rating-vector as a float
@@ -82,6 +105,29 @@ class TestUser:
             total = total + int(self.ratings[key])**2
 
         return math.sqrt(total)
+
+    #Return the pythagorean length of the user's rating-vector
+    def pearson_length(self):
+
+        total = 0
+
+        for key in self.ratings:
+            total = total + (int(self.ratings[key]) - self.average_rating())**2
+
+        return math.sqrt(total)
+
+    #Of the movies the user has seen, return the average rating
+    def average_rating(self):
+
+        count = 0
+        total = 0
+
+        for key in self.ratings:
+            if int(self.ratings[key]) != 0:
+                count += 1
+                total += int(self.ratings[key])
+
+        return (total/count)
 
     #Add a movie/rating pair to the user's rating dictionary
     def add_rating(self, movie_id, rating):

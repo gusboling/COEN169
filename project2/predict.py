@@ -61,10 +61,9 @@ def getInvertedRatingsList(train_list):
     return inverted_list
 
 #FUNCTION: cosinePrediction
-#DESCRIPTION: Takes a TrainUser object and a list of TestUser objects. Returns
-#   a TestUser containing all of the non-target ratings of the argument object,
-#   with predicted values for all of the argument object's target ratings.
-#   k=10
+#DESCRIPTION: Takes a TestUser object and a list of TrainUser objects. Returns
+#   a TestUser object containing all of the non-target ratings of the argument object,
+#   with predicted values for all of the argument object's target ratings (Cosine Similarity).
 def getCosinePrediction(test_user, train_list):
 
     inv_ratings = getInvertedRatingsList(train_list)
@@ -72,8 +71,8 @@ def getCosinePrediction(test_user, train_list):
 
     start_length_test = len(test_user.ratings)
     start_length_predict = len(predict_user.ratings)
-    print("[PREDICT][START] len(predict_user.ratings){}".format(len(predict_user.ratings)))
-    print("[PREDICT][START] len(predict_user.ratings){}".format(len(test_user.ratings)))
+    #print("[PREDICT][START] len(predict_user.ratings){}".format(len(predict_user.ratings)))
+    #print("[PREDICT][START] len(predict_user.ratings){}".format(len(test_user.ratings)))
 
     #print("[PREDICT][DEBUG] 0: {}".format(len(predict_user.ratings)))
     for target in test_user.targets:
@@ -87,7 +86,7 @@ def getCosinePrediction(test_user, train_list):
             for trainer_id in inv_ratings[target]:
                 similarity = getCosineSimilarity(test_user, train_list[int(trainer_id)])
 
-                if len(top_10) < 10:
+                if len(top_10) < 15:
                     top_10[trainer_id] = similarity
                 else:
                     top_10[trainer_id] = similarity
@@ -121,8 +120,96 @@ def getCosinePrediction(test_user, train_list):
         print("[PREDICT][ERROR] Failed unit test for 1:1 correspondence.")
         sys.exit(13)
 
-    print("[PREDICT][END] len(predict_user.ratings){}".format(len(predict_user.ratings)))
-    print("[PREDICT][END] len(predict_user.ratings){}".format(len(test_user.ratings)))
+    #print("[PREDICT][END] len(predict_user.ratings){}".format(len(predict_user.ratings)))
+    #print("[PREDICT][END] len(predict_user.ratings){}".format(len(test_user.ratings)))
+
+    return predict_user
+
+#FUNCTION: getPearsonSimilarity(test_user, train_user)
+#DESCRIPTION: Takes a TestUser and a TrainUser object and returns their Pearson
+#   similarity.
+def getPearsonSimilarity(test_user, train_user):
+
+    #calculate numerator
+    numerator = 0
+    for key in test_user.ratings:
+        if key in train_user.ratings:
+            test_delta = int(test_user.ratings[key]) - test_user.average_rating()
+            train_delta = int(train_user.ratings[key]) - train_user.average_rating()
+            numerator += (test_delta * train_delta)
+
+    #calculate denominator
+    denominator = test_user.pearson_length() * train_user.pearson_length()
+
+    return numerator/denominator
+
+
+    #calculate denominator
+
+#FUNCTION: getPearsonPrediction
+#DESCRIPTION: Takes a TestUser object and a list of TrainUser objects. Returns
+#   a TestUser object containing all of the non-target ratings of the argument object,
+#   with predicted values for all of the argument object's target ratings (Pearson Similarity).
+def getPearsonPrediction(test_user, train_list):
+
+    inv_ratings = getInvertedRatingsList(train_list)
+    predict_user = test_user
+
+    start_length_test = len(test_user.ratings)
+    start_length_predict = len(predict_user.ratings)
+    #print("[PREDICT][START] len(predict_user.ratings){}".format(len(predict_user.ratings)))
+    #print("[PREDICT][START] len(predict_user.ratings){}".format(len(test_user.ratings)))
+
+    #print("[PREDICT][DEBUG] 0: {}".format(len(predict_user.ratings)))
+    for target in test_user.targets:
+
+        if target in inv_ratings:
+
+            #print("[PREDICT][DEBUG] 1: {}".format(len(predict_user.ratings)))
+            n = 15
+            top_n = {}
+            for trainer_id in inv_ratings[target]:
+                similarity = getCosineSimilarity(test_user, train_list[int(trainer_id)])
+
+                if len(top_n) < n:
+                    top_n[trainer_id] = similarity
+                else:
+                    top_n[trainer_id] = similarity
+                    min_sim = 1
+                    min_key = str()
+
+                    for key in top_n:
+                        if min_sim > top_n[key]:
+                            min_sim = top_n[key]
+                            min_key = key
+
+                    top_n.pop(min_key)
+
+            #print("[PREDICT][DEBUG] 2: {}".format(len(predict_user.ratings)))
+            total_sim = 0
+            for trainer_id in top_n: total_sim += abs(int(top_n[trainer_id]))
+
+            prediction_delta = 0
+            for trainer_id in top_n:
+                prediction_delta += (int(top_n[trainer_id]) * ( train_list[int(trainer_id)].ratings[target] - train_list[int(trainer_id)].average_rating() ))
+
+            if total_sim > 0:
+                prediction_delta = prediction_delta / total_sim
+            else:
+                prediction_delta = 0
+
+            #print("[PREDICT][DEBUG] 3: {}".format(len(predict_user.ratings)))
+            predict_user.ratings[target] = test_user.average_rating() + prediction_delta
+            #print("[PREDICT][DEBUG] 3.5: {}".format(len(predict_user.ratings)))
+
+    end_length_test = len(test_user.ratings)
+    end_length_predict = len(predict_user.ratings)
+    if(end_length_predict != start_length_predict) or (end_length_test != start_length_test):
+        print("[PREDICT][ERROR] Failed unit test for 1:1 correspondence.")
+        sys.exit(13)
+
+    #print("[PREDICT][END] len(predict_user.ratings){}".format(len(predict_user.ratings)))
+    #print("[PREDICT][END] len(predict_user.ratings){}".format(len(test_user.ratings)))
 
     return predict_user
 
@@ -132,3 +219,4 @@ if __name__ == "__main__":
     testing_group = dataload.testing_data("./test5.txt")
 
     getCosinePrediction(testing_group[0], training_group)
+    getPearsonPrediction(testing_group[0], training_group)
