@@ -10,6 +10,7 @@ users, and to make predictions for unseen movies based on the result.
 
 #Python Libraries
 import math
+import sys
 
 #Program Modules
 import models
@@ -63,29 +64,65 @@ def getInvertedRatingsList(train_list):
 #DESCRIPTION: Takes a TrainUser object and a list of TestUser objects. Returns
 #   a TestUser containing all of the non-target ratings of the argument object,
 #   with predicted values for all of the argument object's target ratings.
+#   k=10
 def getCosinePrediction(test_user, train_list):
 
     inv_ratings = getInvertedRatingsList(train_list)
     predict_user = test_user
 
-    for target in predict_user.targets:
+    start_length_test = len(test_user.ratings)
+    start_length_predict = len(predict_user.ratings)
+    print("[PREDICT][START] len(predict_user.ratings){}".format(len(predict_user.ratings)))
+    print("[PREDICT][START] len(predict_user.ratings){}".format(len(test_user.ratings)))
+
+    #print("[PREDICT][DEBUG] 0: {}".format(len(predict_user.ratings)))
+    for target in test_user.targets:
 
         if target in inv_ratings:
-            target_trainers = inv_ratings[target]
-            best_id = ""
-            best_match = 0
+            top_10 = {}
+            total_sim = 0
+            predict_rating = 0
 
-            for trainer_id in target_trainers:
+            #print("[PREDICT][DEBUG] 1: {}".format(len(predict_user.ratings)))
+            for trainer_id in inv_ratings[target]:
                 similarity = getCosineSimilarity(test_user, train_list[int(trainer_id)])
-                if  similarity > best_match:
-                    best_match = similarity
-                    best_id = trainer_id
 
-            prediction = train_list[int(trainer_id)].get_rating(target)
-            predict_user.ratings[target] = prediction
+                if len(top_10) < 10:
+                    top_10[trainer_id] = similarity
+                else:
+                    top_10[trainer_id] = similarity
+                    min_sim = 1
+                    min_key = str()
 
-        else:
-            predict_user.targets.remove(target)
+                    for key in top_10:
+                        if min_sim > top_10[key]:
+                            min_sim = top_10[key]
+                            min_key = key
+
+                    top_10.pop(min_key)
+
+            #print("[PREDICT][DEBUG] 2: {}".format(len(predict_user.ratings)))
+            for trainer_id in top_10: total_sim += top_10[trainer_id]
+
+            for trainer_id in top_10:
+                if total_sim != 0:
+                    predict_rating += ((top_10[trainer_id]/total_sim)*train_list[int(trainer_id)].ratings[target])
+                    if int(predict_rating) < 1: predict_rating = 1
+                else:
+                    predict_rating = 1
+
+            #print("[PREDICT][DEBUG] 3: {}".format(len(predict_user.ratings)))
+            predict_user.ratings[target] = int(predict_rating)
+            #print("[PREDICT][DEBUG] 3.5: {}".format(len(predict_user.ratings)))
+
+    end_length_test = len(test_user.ratings)
+    end_length_predict = len(predict_user.ratings)
+    if(end_length_predict != start_length_predict) or (end_length_test != start_length_test):
+        print("[PREDICT][ERROR] Failed unit test for 1:1 correspondence.")
+        sys.exit(13)
+
+    print("[PREDICT][END] len(predict_user.ratings){}".format(len(predict_user.ratings)))
+    print("[PREDICT][END] len(predict_user.ratings){}".format(len(test_user.ratings)))
 
     return predict_user
 
