@@ -30,7 +30,7 @@ def training_data(file_path):
 
 #Function: test_data
 #Returns a list of TestUser objects (used for all three test files)
-def test_data(file_path):
+def testing_data(file_path):
     testers = []
     users = {}
 
@@ -45,13 +45,14 @@ def test_data(file_path):
             if user_id not in users:
                 users[user_id] = models.TestUser(user_id, {movie_id:rating})
             else:
-                users[user_id].add_rating(movie_id, rating)
+                users[user_id].add_rating(movie_id, int(rating))
 
     #Convert to list
     for key in users:
         testers.append(users[key])
 
     return testers
+
 
 #Debugging Code - run when module is called from the command line w/ no arguments.
 if __name__=="__main__":
