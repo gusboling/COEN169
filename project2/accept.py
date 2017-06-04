@@ -21,16 +21,28 @@ files only.)
 AXIOM: A single call from the "main.py" module should cause each file in question
 to be read only once for all checks being done during the execution of the call.
 (Such that the read data is constantacross all checks.)
+
+AXIOM: This module supports unit checks for the format and validity of processed
+test files (with predictions for unseen movies); unprocessed test-files (containing
+zeroes), or training files are beyond the scope of this module.
 '''
 
 #Python Standard Libraries
 import sys
 
-#FUNCTION: file_tuples
-#DESCRIPTION: Takes a file path as a string. Returns a list of user-movie-rating
-#   tuples in the file.
-def load_tuples(file_path):
-    pass
+#FUNCTION: load_triples
+#DESCRIPTION: Takes a test file path as a string. Returns a list of user-movie-rating
+#   (triples) in the file.
+def load_triples(file_path):
+    triples = []
+    with open(file_path, "r") as test_file:
+        for line in test_file:
+            new_triple = line.split()
+            new_triple[2] = new_triple[2].strip()
+            triples.append(new_triple)
+    print("[INFO] Loaded {} triples from file '{}'".format(len(triples), file_path))
+    return triples
+
 
 #FUNCTION: file_ratings
 #DESCRIPTION: Takes a file path as a string. Returns the number of ratings
@@ -42,12 +54,12 @@ def rating_count(file_path):
     return len(lines)
 
 #FUNCTION: check_rating
-#DESCRIPTION: Takes a rating as a string. Checks if the  following statements are
+#DESCRIPTION: Takes a rating (post-prediction) as a string. Checks if the  following statements are
 #   true with regard to the string.
 #       1. string has length of 1. (check if float)
 #       2. string contains a number. (check if NaN)
-#       3. int(string) >= 0 (check if )
-#       4. int(string) <= 5
+#       3. int(string) >= 1 (check if out-of-bounds)
+#       4. int(string) <= 5 (check if out-of-bounds)
 #   If any of these conditions are not true, then print an error and trigger an
 #   exit.
 def check_rating(rating_str):
@@ -58,7 +70,7 @@ def check_rating(rating_str):
     elif not any(char.isdigit() for char in rating_str):
         print("[ERROR][CHECK-RATING] Found rating with non-digit characters ({}). Exiting.".format(rating_str))
         sys.exit(1)
-    elif (int(rating_str) < 0) or (int(rating_str) > 5):
+    elif (int(rating_str) < 1) or (int(rating_str) > 5):
         print("[ERROR][CHECK-RATING] Found rating with out-of-bounds value ({}). Exiting.".format(rating_str))
         sys.exit(1)
     else:
@@ -68,7 +80,7 @@ def check_rating(rating_str):
 #DESCRIPTION: Takes a test file's path and it's corresponding result file's path
 #   as strings. If the number of ratings in the result file doesn't equal the
 #   number of ratings in the result file, print an error and trigger an exit.
-def check_conserve(test_path, result_path):
+def check_conserve(triples_list):
     pass
 
 #FUNCTION: check_correspond
@@ -76,7 +88,7 @@ def check_conserve(test_path, result_path):
 #   file as strings. For each user-movie (tuple) in the test file, check that the
 #   same user-movie (tuple) exists in the result file. If a pair has no corresponding
 #   entry in the result file, print an error and trigger an exit.
-def check_correspond(test_path, result_path):
+def check_correspond(triples_list):
     pass
 
 #FUNCTION: check_preserve
@@ -101,10 +113,13 @@ def check_predict(test_path, result_path):
 #   and result_path as arguments. If all checks return without triggering an
 #   exit, then output a success message and return gracefully.
 def do_check(test_path, result_path):
-    pass
+    triples = load_triples(result_path)
+    for t in triples:
+        check_rating(t[2])
+    print("[ACCEPT] All ratings in prediction file '{}' meet test criteria.".format(result_path))
 
 if __name__=="__main__":
-
+    '''
     print("[TEST] Ratings in test5.txt (8497 ratings) = {}".format(rating_count("test5.txt")))
     print("[TEST] Ratings in test10.txt (7000 ratings) = {}".format(rating_count("test10.txt")))
     print("[TEST] Ratings in test20.txt (12367 ratings) = {}".format(rating_count("test20.txt")))
@@ -112,7 +127,7 @@ if __name__=="__main__":
 
     try_rating = ""
 
-    good_ratings = ["0", "1", "2", "3", "4", "5"]
+    good_ratings = ["1", "2", "3", "4", "5"]
 
     for rating in good_ratings:
         check_rating(rating)
@@ -120,7 +135,7 @@ if __name__=="__main__":
 
     print("")
 
-    bad_ratings = ["2.3", "56", "123", "6", "-1", "0.2"]
+    bad_ratings = ["0", "2.3", "56", "123", "6", "-1", "0.2"]
 
     for rating in bad_ratings:
         try:
@@ -129,3 +144,7 @@ if __name__=="__main__":
             print("[TEST] Failed check_rating test for BAD rating ({}).".format(rating))
 
     print("")
+
+    load_triples("pearson_result5.txt")
+    '''
+    do_check("test5.txt", "pearson_result5.txt")
