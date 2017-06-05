@@ -152,7 +152,7 @@ def getPearsonSimilarity(test_user, train_user):
 #   with predicted values for all of the argument object's target ratings (Pearson Similarity).
 def getPearsonPrediction(test_user, train_list):
 
-    inv_ratings = getInvertedRatingsList(train_list)
+    inv_ratings = getInvertedRatingsList(train_list) #This doesn't need to happen every time
     predict_user = test_user
 
     start_length_test = len(test_user.ratings)

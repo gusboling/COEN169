@@ -40,7 +40,7 @@ def load_triples(file_path):
             new_triple = line.split()
             new_triple[2] = new_triple[2].strip()
             triples.append(new_triple)
-    print("[INFO] Loaded {} triples from file '{}'".format(len(triples), file_path))
+    print("[ACCEPT] Loaded {} triples from file '{}'".format(len(triples), file_path))
     return triples
 
 
@@ -112,10 +112,12 @@ def check_predict(test_path, result_path):
 #   file as strings. Call each of the above check_* functions with the test_path
 #   and result_path as arguments. If all checks return without triggering an
 #   exit, then output a success message and return gracefully.
-def do_check(test_path, result_path):
+def do_check(result_path):
     triples = load_triples(result_path)
+
     for t in triples:
         check_rating(t[2])
+
     print("[ACCEPT] All ratings in prediction file '{}' meet test criteria.".format(result_path))
 
 if __name__=="__main__":

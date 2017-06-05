@@ -22,7 +22,7 @@ class TrainUser:
         self.ratings = {}
 
         for index, rating in enumerate(new_rating_list):
-            self.ratings[str(index)] = int(rating)
+            self.ratings[str(index+1)] = int(rating)
 
     #Return the rating of movie at ratings[movie_id]; returns 0 if key not valid.
     def get_rating(self, movie_id):

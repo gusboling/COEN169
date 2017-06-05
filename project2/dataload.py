@@ -63,5 +63,5 @@ if __name__=="__main__":
     print("[DEBUG] Loaded {} training user profiles from 'train.txt'".format(len(train_users)))
 
     print("[DEBUG] Loading test5 data.")
-    test_users = test_data("./test5.txt")
+    test_users = testing_data("./test5.txt")
     print("[DEBUG] Loaded {} testing user profiles from 'test5.txt'.".format(len(test_users)))

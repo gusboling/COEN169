@@ -11,31 +11,58 @@ ratings per user respectively.
 
 #Standard library imports
 import sys
+import timeit
 
 #Application imports
+import accept
 import dataload
 import datawrite
 import models
 import predict
 
-#FUNCTION: loadTrainingData
-#DESCRIPTION: takes a filepath as a string and returns a list of TrainUser objects
-#   along with printing informational messages.
-def loadTrainingData(train_path):
 
-    training_list = dataload.training_data(train_path)
-    print("[LOAD] Loaded data for {} training users.".format(len(training_list)))
-    return training_list
+def do_cosine(tester_list, trainer_list):
+    tpc = 1
+    results = []
+    out_file = ""
 
-#FUNCTION: loadTestingData
-#DESCRIPTION: takes a filepath as a string and returns a list of TestUser objects
-#   along with printing informational messages.
-def loadTestingData(test_path):
+    if int(tester_list[0].id) > 400:
+        out_file = "cosine20"
+    elif int(tester_list[0].id) > 300:
+        out_file = "cosine10"
+    else:
+        out_file = "cosine5"
 
-    test_list = dataload.testing_data(test_path)
-    nz_ratings = len(test_list[0].get_non_zero())
-    print("[LOAD] Loaded data for {} test users (~{} sample ratings).".format(len(test_list), nz_ratings))
-    return test_list
+    for tester in tester_list:
+        if (tpc % 10) == 0:
+            print("[INFO] Processed {}/{} in {}.".format(tpc, len(tester_list), out_file))
+        results.append(predict.getCosinePrediction(tester, trainer_list))
+        tpc += 1
+    datawrite.writePredictions(results, out_file+".txt")
+    print("[INFO] Wrote results to file.")
+    accept.do_check(out_file + ".txt")
+
+
+def do_pearson(tester_list, trainer_list):
+    tpc = 1
+    results = []
+    out_file = ""
+
+    if int(tester_list[0].id) > 400:
+        out_file = "pearson20"
+    elif int(tester_list[0].id) > 300:
+        out_file = "pearson10"
+    else:
+        out_file = "pearson5"
+
+    for tester in tester_list:
+        if (tpc % 10) == 0:
+            print("[INFO] Processed {}/{} in {}.".format(tpc, len(tester_list), out_file))
+        results.append(predict.getPearsonPrediction(tester, trainer_list))
+        tpc += 1
+    datawrite.writePredictions(results, out_file+".txt")
+    print("[INFO] Wrote results to file.")
+    accept.do_check(out_file + ".txt")
 
 #FUNCTION: main
 #DESCRIPTION: the main execution block for Project 2
@@ -43,82 +70,36 @@ def main():
 
     train_file = "./train.txt"
     test_files = ["./test5.txt", "./test10.txt", "./test20.txt"]
-    print("[INFO] Initializing Recommendation Engine.")
 
     #PHASE 1: Read in data from text files and convert it into python data-structures
-    trainers = loadTrainingData(train_file)
+    load_start = timeit.default_timer()
 
-    testers_5 = loadTestingData(test_files[0])
-    testers_10 = loadTestingData(test_files[1])
-    testers_20 = loadTestingData(test_files[2])
+    trainers = dataload.training_data(train_file)
+    testers_5 = dataload.testing_data(test_files[0])
+    testers_10 = dataload.testing_data(test_files[1])
+    testers_20 = dataload.testing_data(test_files[2])
 
-    predict_5 = []
-    predict_10 = []
-    predict_20 = []
+    load_dur_str = "%.3f" % (timeit.default_timer() - load_start)
+    print("[TIMER] Loaded Files ({} seconds)".format(load_dur_str))
 
-    '''
-    #PHASE 2: Make predictions for each user using cosine-similarity and output results
-    tpc = 0
-    for tester in testers_5:
-        if (tpc % 25) == 0:
-            print("[INFO] Processed {}/{} in testers_5".format(tpc, len(testers_5)))
-        predict_5.append(predict.getCosinePrediction(tester, trainers))
-        tpc += 1
-    datawrite.writePredictions(predict_5, "cosine_result5.txt")
-    print("[INFO] Wrote results to file.")
+    #PHASE 2: Make predictions using cosine similarity
+    cosine_start = timeit.default_timer()
+    do_cosine(testers_5, trainers)
+    do_cosine(testers_10, trainers)
+    do_cosine(testers_20, trainers)
+    cosine_dur_str = "%.3f" % (timeit.default_timer() - cosine_start)
+    print("[TIMER] Made Cosine Predictions ({} seconds)".format(cosine_dur_str))
 
-    tpc = 0
-    for tester in testers_10:
-        if (tpc % 25) == 0:
-            print("[INFO] Processed {}/{} in testers_10".format(tpc, len(testers_10)))
-        predict_10.append(predict.getCosinePrediction(tester, trainers))
-        tpc += 1
-    datawrite.writePredictions(predict_10, "cosine_result10.txt")
-    print("[INFO] Wrote results to file.")
-
-    tpc = 0
-    for tester in testers_20:
-        if (tpc % 25) == 0:
-            print("[INFO] Processed {}/{} in testers_20".format(tpc, len(testers_20)))
-        predict_20.append(predict.getCosinePrediction(tester, trainers))
-        tpc += 1
-    datawrite.writePredictions(predict_20, "cosine_result20.txt")
-    print("[INFO] Wrote results to file.")
-    '''
-
-    #PHASE 3: Make predictions for each user using pearson-similarity and output results
-    pearson_5 = []
-    pearson_10 = []
-    pearson_20 = []
-
-    tpc = 0
-    for tester in testers_5:
-        if (tpc % 25) == 0:
-            print("[INFO] Processed {}/{} in testers_5 (Pearson)".format(tpc, len(testers_5)))
-        pearson_5.append(predict.getPearsonPredictionIUF(tester, trainers))
-        tpc += 1
-    datawrite.writePredictions(pearson_5, "pearson_result5.txt")
-    print("[INFO] Wrote results to file.")
-
-    tpc = 0
-    for tester in testers_10:
-        if (tpc % 25) == 0:
-            print("[INFO] Processed {}/{} in testers_10 (Pearson)".format(tpc, len(testers_10)))
-        pearson_10.append(predict.getPearsonPredictionIUF(tester, trainers))
-        tpc += 1
-    datawrite.writePredictions(pearson_10, "pearson_result10.txt")
-    print("[INFO] Wrote results to file.")
-
-    tpc = 0
-    for tester in testers_20:
-        if (tpc % 25) == 0:
-            print("[INFO] Processed {}/{} in testers_20 (Pearson)".format(tpc, len(testers_20)))
-        pearson_20.append(predict.getPearsonPredictionIUF(tester, trainers))
-        tpc += 1
-    datawrite.writePredictions(pearson_20, "pearson_result20.txt")
-    print("[INFO] Wrote results to file.")
+    #PHASE 3: Make predictions using pearson similarity
+    pearson_start = timeit.default_timer()
+    do_pearson(testers_5, trainers)
+    do_pearson(testers_10, trainers)
+    do_pearson(testers_20, trainers)
+    pearson_dur_str = "%.3f" % (timeit.default_timer() - pearson_start)
+    print("[TIMER] Made Pearson predictions. ({} seconds)".format(pearson_dur_str))
 
     #PHASE 4: Make predictions for each user using a third method and output results
+
     print("[INFO] Nothing else to do;")
     sys.exit(0)
 
