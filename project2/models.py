@@ -42,6 +42,13 @@ class TrainUser:
 
         return math.sqrt(total)
 
+    #Return the length of a sub-vector with only the specified keys
+    def common_length(self, com_rts):
+        total = 0
+        for movie_id in com_rts:
+            total += int(self.ratings[movie_id])**2
+        return math.sqrt(total)
+
     #Return the pythagorean length of the user's rating-vector
     def pearson_length(self):
 
@@ -90,11 +97,11 @@ class TestUser:
 
     #Return a dict containing all keys with non-zero values from self.ratings
     def get_non_zero(self):
-        nz = {}
+        result = []
         for key in self.ratings:
-            if int(self.ratings[key]) != 0:
-                nz[key]=int(self.ratings[key])
-        return nz
+            if self.ratings[key] != 0:
+                result.append(key)
+        return result
 
     #Return the pythagorean length of the user's rating-vector as a float
     def length(self):
@@ -106,7 +113,14 @@ class TestUser:
 
         return math.sqrt(total)
 
-    #Return the pythagorean length of the user's rating-vector
+    #Return the length of a sub-vector with only the specified keys
+    def common_length(self, com_rts):
+        total = 0
+        for movie_id in com_rts:
+            total += int(self.ratings[movie_id])**2
+        return math.sqrt(total)
+
+    #Return the pythagorean length of the user's rating-vector with pearson modification
     def pearson_length(self):
 
         total = 0

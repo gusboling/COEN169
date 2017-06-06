@@ -39,6 +39,7 @@ def do_cosine(tester_list, trainer_list):
         results.append(predict.getCosinePrediction(tester, trainer_list))
         tpc += 1
     datawrite.writePredictions(results, out_file+".txt")
+    datawrite.writeCSV(results, out_file + "_csv.txt")
     print("[INFO] Wrote results to file.")
     accept.do_check(out_file + ".txt")
 
@@ -85,14 +86,18 @@ def main():
     print("[TIMER] Loaded Files ({} seconds)".format(load_dur_str))
 
     #PHASE 2: Make predictions using cosine similarity
-    #CURRENT BEST OVERALL MAE: 1.0122
+    #CURRENT BEST OVERALL MAE:  1.0122
+    #NEW COSINE SIM MAE:        1.0164
+    #TOP 100:                   1.0547
+    #TOP 50:                    1.0547
+    #TOP 10, NEW COM_RTS:       1.0199
     cosine_start = timeit.default_timer()
     do_cosine(testers_5, trainers)
     do_cosine(testers_10, trainers)
     do_cosine(testers_20, trainers)
     cosine_dur_str = "%.3f" % (timeit.default_timer() - cosine_start)
     print("[TIMER] Made Cosine Predictions ({} seconds)".format(cosine_dur_str))
-
+    '''
     #PHASE 3: Make predictions using pearson similarity
     #CURRENT BEST OVERALL MAE: 1.0463
     pearson_start = timeit.default_timer()
@@ -101,7 +106,7 @@ def main():
     do_pearson(testers_20, trainers)
     pearson_dur_str = "%.3f" % (timeit.default_timer() - pearson_start)
     print("[TIMER] Made Pearson predictions. ({} seconds)".format(pearson_dur_str))
-
+    '''
     #PHASE 4: Make predictions for each user using a third method and output results
 
     print("[INFO] Nothing else to do;")
