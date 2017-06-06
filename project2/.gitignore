@@ -5,3 +5,4 @@
 
 #Exclude program output
 *.out
+*.txt
