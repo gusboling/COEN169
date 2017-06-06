@@ -42,7 +42,6 @@ def do_cosine(tester_list, trainer_list):
     print("[INFO] Wrote results to file.")
     accept.do_check(out_file + ".txt")
 
-
 def do_pearson(tester_list, trainer_list):
     tpc = 1
     results = []
@@ -64,6 +63,9 @@ def do_pearson(tester_list, trainer_list):
     print("[INFO] Wrote results to file.")
     accept.do_check(out_file + ".txt")
 
+def do_pearsonIUF(tester_list, trainer_list):
+    pass
+
 #FUNCTION: main
 #DESCRIPTION: the main execution block for Project 2
 def main():
@@ -83,6 +85,7 @@ def main():
     print("[TIMER] Loaded Files ({} seconds)".format(load_dur_str))
 
     #PHASE 2: Make predictions using cosine similarity
+    #CURRENT BEST OVERALL MAE: 1.0122
     cosine_start = timeit.default_timer()
     do_cosine(testers_5, trainers)
     do_cosine(testers_10, trainers)
@@ -91,6 +94,7 @@ def main():
     print("[TIMER] Made Cosine Predictions ({} seconds)".format(cosine_dur_str))
 
     #PHASE 3: Make predictions using pearson similarity
+    #CURRENT BEST OVERALL MAE: 1.0463
     pearson_start = timeit.default_timer()
     do_pearson(testers_5, trainers)
     do_pearson(testers_10, trainers)
